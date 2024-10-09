@@ -55,14 +55,14 @@ question = on_command("提问", rule=to_me(), aliases={"question"}, priority=10,
 @question.handle()
 async def handle_function(args: Message = CommandArg()):
     # 提取参数纯文本作为地名，判断是否有效
-    if location := args.extract_plain_text():
+    if user_content := args.extract_plain_text():
         # 调用tools中的方法读取system_content.txt文件，赋值给system_content变量
         # 获取当前脚本所在的目录
         current_dir = os.path.dirname(os.path.abspath(__file__))
         # 构建文件的绝对路径
-        file_path = os.path.join(current_dir, 'system_content.txt')
+        file_path = f'{current_dir}\\模型文本\\{current_model}.txt'
         system_content = FileOperations.read_txt_file(file_path)
-        text = my_openai_call(system_content=system_content, user_content=location)
+        text = my_openai_call(system_content=system_content, user_content=user_content)
         await question.finish(text)
     else:
         await question.finish("请输入地名")
