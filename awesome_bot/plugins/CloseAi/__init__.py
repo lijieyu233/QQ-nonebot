@@ -9,7 +9,7 @@ from openai import OpenAI
 
 from tools.FileOperations import FileOperations
 
-
+logger=logging.getLogger('my_logger')
 def my_openai_call(apikey="sk-NPTWOw0zNXh7iMCQ5jsYve1e9LFGcli6DM4R0K0LWMU7Yaht",
                    model="gpt-4o-mini-2024-07-18",
                    user_content="如何做西红柿炖牛腩？",
@@ -47,13 +47,14 @@ current_model = "system_content"  # 当前模型名称
 current_model_path = "system_content.txt"  # 当前模型路径
 current_directory = os.path.dirname(os.path.abspath(__file__))  # 获取当前脚本所在目录
 model_list_path = current_directory + '\\模型文本\\' + "model_list.txt"
-
+logger.info("插件加载完毕")
 # 注册一个名为"提问"的命令，匹配"提问"、"question"、"查天气"三个关键词，优先级为10，阻止
 question = on_command("提问", rule=to_me(), aliases={"question"}, priority=10, block=True)
 
 
 @question.handle()
 async def handle_function(args: Message = CommandArg()):
+    logger.info("开始执行提问命令")
     # 提取参数纯文本作为地名，判断是否有效
     if user_content := args.extract_plain_text():
         # 调用tools中的方法读取system_content.txt文件，赋值给system_content变量

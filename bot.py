@@ -2,9 +2,12 @@ import  nonebot
 from  nonebot.adapters.console import Adapter as ConsoleAdapter
 from nonebot.adapters.qq import Adapter as QQAdapter
 
+from tools.logger_setup import setup_logger
+
 #驱动器
 # from  nonebot.drivers.httpx import Driver as HttpxDriver
 # 初始化 NoneBot
+logger=setup_logger()
 nonebot.init()
 
 
@@ -23,6 +26,6 @@ nonebot.load_builtin_plugins("echo")  # 内置插件
 # nonebot.load_plugin("awesome_bot/plugins/question/__init__.py")  # 第三方插件
 nonebot.load_plugins("awesome_bot/plugins/question")  # 本地插件
 nonebot.load_plugins("awesome_bot/plugins/CloseAI")  # 本地插件
-
+logger.info("bot启动")
 if __name__ == "__main__":
     nonebot.run()
