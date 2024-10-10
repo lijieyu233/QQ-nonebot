@@ -6,10 +6,11 @@ from nonebot.params import CommandArg
 from nonebot.adapters import Message
 from nonebot.rule import to_me
 from openai import OpenAI
-
+from tools.logger_setup import  setup_logger
 from tools.FileOperations import FileOperations
 
-logger=logging.getLogger('my_logger')
+# logger=logging.getLogger('my_logger')
+logger=setup_logger('my_logger')
 def my_openai_call(apikey="sk-NPTWOw0zNXh7iMCQ5jsYve1e9LFGcli6DM4R0K0LWMU7Yaht",
                    model="gpt-4o-mini-2024-07-18",
                    user_content="如何做西红柿炖牛腩？",
@@ -47,7 +48,7 @@ current_model = "system_content"  # 当前模型名称
 current_model_path = "system_content.txt"  # 当前模型路径
 current_directory = os.path.dirname(os.path.abspath(__file__))  # 获取当前脚本所在目录
 model_list_path = current_directory + '\\模型文本\\' + "model_list.txt"
-logger.info("插件加载完毕")
+logger.info("CloseAI插件加载完毕")
 # 注册一个名为"提问"的命令，匹配"提问"、"question"、"查天气"三个关键词，优先级为10，阻止
 question = on_command("提问", rule=to_me(), aliases={"question"}, priority=10, block=True)
 
@@ -75,6 +76,7 @@ train = on_command("模型训练", rule=to_me(), aliases={"train", "训练"}, pr
 
 @train.handle()
 async def handle_function(args: Message = CommandArg()):
+    logger.info("开始执行模型训练命令")
     content = args.extract_plain_text()
     if content:
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -90,6 +92,7 @@ create = on_command("模型创建", rule=to_me(), aliases={"create", "创建"}, 
 
 @create.handle()
 async def handle_create_function(args: Message = CommandArg()):
+    logger.info("开始执行模型创建命令")
     name = args.extract_plain_text()
     if name:
 
@@ -116,10 +119,9 @@ async def handle_create_function(args: Message = CommandArg()):
 # 查看
 # 注册一个名为"当前模型查看的命令 "，匹配"当前模型查看"、"view"、"current_model"三个关键词，优先级为10，阻止
 view = on_command("当前模型", rule=to_me(), aliases={"current"}, priority=10, block=True)
-
-
 @view.handle()
 async def handle_view_function(args: Message = CommandArg()):
+    logger.info("开始执行模型查看命令")
     if current_model:
         await view.finish(f"当前模型:{current_model}")
 
@@ -131,6 +133,7 @@ select = on_command("模型选择", rule=to_me(), aliases={"select", "选择"}, 
 
 @select.handle()
 async def handle_select_function(args: Message = CommandArg()):
+    logger.info("开始执行模型选择命令")
     global current_model
     global current_model_path
     if name := args.extract_plain_text():
@@ -151,6 +154,7 @@ delete = on_command("模型删除", rule=to_me(), aliases={"delete", "删除"}, 
 
 @delete.handle()
 async def handle_delete_function(args: Message = CommandArg()):
+    logger.info("开始执行模型删除命令")
     global current_model
     global current_model_path
     if name := args.extract_plain_text():
@@ -175,6 +179,7 @@ model_list = on_command("模型列表", rule=to_me(), aliases={"list", "列表"}
 
 @model_list.handle()
 async def handle_delete_function(args: Message = CommandArg()):
+    logger.info("开始执行模型列表命令")
     list = FileOperations.load_list_from_txt(model_list_path)
     await model_list.finish(f"当前模型列表:{list}")
 
@@ -182,10 +187,9 @@ async def handle_delete_function(args: Message = CommandArg()):
 # 查看模型
 # 注册一个名为"查看模型"的命令，匹配"查看模型"、"view_model"、"查看"三个关键词，优先级为1，
 view_model = on_command("查看模型", rule=to_me(), aliases={"view", "查看"}, priority=1, block=True)
-
-
 @view_model.handle()
 async def handle_view_model_function(args: Message = CommandArg()):
+    logger.info("开始执行查看模型命令")
     name = args.extract_plain_text()
     if name:
         text = FileOperations.read_txt_file(f'{current_directory}/模型文本/{name}.txt')

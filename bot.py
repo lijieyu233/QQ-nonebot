@@ -1,4 +1,5 @@
 import  nonebot
+from pathlib import Path
 from  nonebot.adapters.console import Adapter as ConsoleAdapter
 from nonebot.adapters.qq import Adapter as QQAdapter
 
@@ -25,7 +26,9 @@ bots=nonebot.get_bots()
 nonebot.load_builtin_plugins("echo")  # 内置插件
 # nonebot.load_plugin("awesome_bot/plugins/question/__init__.py")  # 第三方插件
 nonebot.load_plugins("awesome_bot/plugins/question")  # 本地插件
-nonebot.load_plugins("awesome_bot/plugins/CloseAI")  # 本地插件
+# nonebot.load_plugins("awesome_bot/plugins/CloseAI")  # 本地插件
+# nonebot.load_plugins('awesome_bot/plugins/CloseAi')
+nonebot.load_plugin(Path('./awesome_bot/plugins/CloseAi/__init__.py'))
 logger.info("bot启动")
 if __name__ == "__main__":
     nonebot.run()
