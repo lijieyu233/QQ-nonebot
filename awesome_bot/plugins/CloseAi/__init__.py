@@ -6,11 +6,13 @@ from nonebot.params import CommandArg
 from nonebot.adapters import Message
 from nonebot.rule import to_me
 from openai import OpenAI
-from tools.logger_setup import  setup_logger
+from tools.logger_setup import setup_logger
 from tools.FileOperations import FileOperations
 
 # logger=logging.getLogger('my_logger')
-logger=setup_logger('my_logger')
+logger = setup_logger('my_logger')
+
+
 def my_openai_call(apikey="sk-NPTWOw0zNXh7iMCQ5jsYve1e9LFGcli6DM4R0K0LWMU7Yaht",
                    model="gpt-4o-mini-2024-07-18",
                    user_content="如何做西红柿炖牛腩？",
@@ -45,9 +47,10 @@ def my_openai_call(apikey="sk-NPTWOw0zNXh7iMCQ5jsYve1e9LFGcli6DM4R0K0LWMU7Yaht",
 
 default_model = "system_content"  # 默认模型名称
 current_model = "system_content"  # 当前模型名称
-current_model_path = "system_content.txt"  # 当前模型路径
-current_directory = os.path.dirname(os.path.abspath(__file__))  # 获取当前脚本所在目录
-model_list_path = current_directory + '\\模型文本\\' + "model_list.txt"
+current_directory = os.path.dirname(os.path.abspath(__file__))  # 获取当前脚本所在目录 ./closeAI
+current_model_path = os.path.join(current_directory, '模型文本', f'{current_model}.txt')  # 当前模型全路径
+
+model_list_path = os.path.join(current_directory, '模型文本', "model_list.txt")  # 模型列表文件位置
 logger.info("CloseAI插件加载完毕")
 # 注册一个名为"提问"的命令，匹配"提问"、"question"、"查天气"三个关键词，优先级为10，阻止
 question = on_command("提问", rule=to_me(), aliases={"question"}, priority=10, block=True)
@@ -62,8 +65,7 @@ async def handle_function(args: Message = CommandArg()):
         # 获取当前脚本所在的目录
         current_dir = os.path.dirname(os.path.abspath(__file__))
         # 构建文件的绝对路径
-        file_path = f'{current_dir}\\模型文本\\{current_model}.txt'
-        system_content = FileOperations.read_txt_file(file_path)
+        system_content = FileOperations.read_txt_file(current_model_path)
         text = my_openai_call(system_content=system_content, user_content=user_content)
         await question.finish(text)
     else:
@@ -79,9 +81,7 @@ async def handle_function(args: Message = CommandArg()):
     logger.info("开始执行模型训练命令")
     content = args.extract_plain_text()
     if content:
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(current_dir, '模型文本', current_model + '.txt')
-        FileOperations.append_to_txt_file(file_path, content)
+        FileOperations.append_to_txt_file(current_model_path, content)
         await train.finish("模型训练成功")
 
 
@@ -95,10 +95,8 @@ async def handle_create_function(args: Message = CommandArg()):
     logger.info("开始执行模型创建命令")
     name = args.extract_plain_text()
     if name:
-
-        model_path = os.path.dirname(os.path.abspath(__file__)) + '\\模型文本\\' + name + ".txt"
-        print("模型路径:" + model_path)
-        logging.info(f"模型路径: {model_path}")
+        model_path = os.path.join(current_directory, '模型文件', f'{name}.txt')
+        logger.info("模型路径" + model_path)
         try:
             # 检查文件是否存在，如果不存在则创建
             if not os.path.exists(model_path):
@@ -119,6 +117,8 @@ async def handle_create_function(args: Message = CommandArg()):
 # 查看
 # 注册一个名为"当前模型查看的命令 "，匹配"当前模型查看"、"view"、"current_model"三个关键词，优先级为10，阻止
 view = on_command("当前模型", rule=to_me(), aliases={"current"}, priority=10, block=True)
+
+
 @view.handle()
 async def handle_view_function(args: Message = CommandArg()):
     logger.info("开始执行模型查看命令")
@@ -137,10 +137,9 @@ async def handle_select_function(args: Message = CommandArg()):
     global current_model
     global current_model_path
     if name := args.extract_plain_text():
-        # 获取当前脚本所在的目录
-        current_dir = os.path.dirname(os.path.abspath(__file__))
         # 构建文件的绝对路径
-        file_path = os.path.join(current_dir, '模型文本', name + '.txt')
+        file_path = os.path.join(current_directory, '模型文本', name + '.txt')
+        logger.info(f'{name}模型路径:{file_path}')
         if os.path.isfile(file_path):
             current_model = name
             current_model_path = file_path
@@ -163,12 +162,11 @@ async def handle_delete_function(args: Message = CommandArg()):
         if name == current_model:
             await delete.finish("当前模型无法删除")
         # 获取当前脚本所在的目录
-        current_dir = os.path.dirname(os.path.abspath(__file__))
         # 构建文件的绝对路径
-        file_path = os.path.join(current_dir, '模型文本', name + '.txt')
+        file_path = os.path.join(current_directory, '模型文本', name + '.txt')
         if os.path.isfile(file_path):
             os.remove(file_path)
-            current_model = None
+            FileOperations.delete_element_in_txt(file_path, name)
             await delete.finish(f"成功删除{name}模型")
 
 
@@ -192,7 +190,8 @@ async def handle_view_model_function(args: Message = CommandArg()):
     logger.info("开始执行查看模型命令")
     name = args.extract_plain_text()
     if name:
-        text = FileOperations.read_txt_file(f'{current_directory}/模型文本/{name}.txt')
+        model_path=os.path.join(current_directory, '模型文本',f'{name}.txt')
+        text = FileOperations.read_txt_file(model_path)
         await view_model.finish(f"{name}模型的内容:\n{text}")
     elif current_model:
         text = FileOperations.read_txt_file(current_model_path)
