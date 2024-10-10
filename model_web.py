@@ -19,37 +19,37 @@ def save_file(filepath, content):
             f.write(content.strip())
         return f"{os.path.basename(filepath)} has been saved!"
     return "File not found!"
+def main():
+    # Gradio 接口
+    with gr.Blocks() as app:
+        gr.Markdown("# TXT File Editor")
 
-# Gradio 接口
-with gr.Blocks() as app:
-    gr.Markdown("# TXT File Editor")
+        with gr.Row():
+            directory_input = gr.Textbox(label="输入文件夹路径", placeholder="e.g., /path/to/directory")
+            load_files_button = gr.Button("加载文件夹")
 
-    with gr.Row():
-        directory_input = gr.Textbox(label="输入文件夹路径", placeholder="e.g., /path/to/directory")
-        load_files_button = gr.Button("加载文件夹")
+        file_selector = gr.Dropdown(label="选择模型文本")
+        load_button = gr.Button("加载模型文本")
 
-    file_selector = gr.Dropdown(label="选择模型文本")
-    load_button = gr.Button("加载模型文本")
-
-    text_area = gr.Textbox(label="模型", lines=20, interactive=True)
-    save_button = gr.Button("保存修改")
+        text_area = gr.Textbox(label="模型", lines=20, interactive=True)
+        save_button = gr.Button("保存修改")
 
 
-    def load_files_callback(directory):
-        txt_files = get_txt_files(directory)
-        if txt_files:
-            return gr.Dropdown(choices=txt_files, label="选择模型文本")
-        else:
-            return gr.Dropdown(choices=[], label="No TXT files found")
-    def load_file_callback(selected_file):
-        return load_file(selected_file)
+        def load_files_callback(directory):
+            txt_files = get_txt_files(directory)
+            if txt_files:
+                return gr.Dropdown(choices=txt_files, label="选择模型文本")
+            else:
+                return gr.Dropdown(choices=[], label="No TXT files found")
+        def load_file_callback(selected_file):
+            return load_file(selected_file)
 
-    def save_file_callback(selected_file, content):
-        return save_file(selected_file, content)
+        def save_file_callback(selected_file, content):
+            return save_file(selected_file, content)
 
-    load_files_button.click(fn=load_files_callback, inputs=directory_input, outputs=file_selector)
-    load_button.click(fn=load_file_callback, inputs=file_selector, outputs=text_area)
-    save_button.click(fn=save_file_callback, inputs=[file_selector, text_area], outputs=text_area)
+        load_files_button.click(fn=load_files_callback, inputs=directory_input, outputs=file_selector)
+        load_button.click(fn=load_file_callback, inputs=file_selector, outputs=text_area)
+        save_button.click(fn=save_file_callback, inputs=[file_selector, text_area], outputs=text_area)
 
 # 启动 Gradio 应用
-app.launch()
+    app.launch()
