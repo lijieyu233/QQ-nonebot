@@ -34,7 +34,7 @@ nonebot.load_plugins("awesome_bot/plugins/question")  # 本地插件
 nonebot.load_plugin(Path('./awesome_bot/plugins/CloseAi/__init__.py'))
 logger.info("bot启动")
 if __name__ == "__main__":
-    thread1=threading.Thread(target=model_web.main)
+    thread1=threading.Thread(target=model_web.main())
     thread2=threading.Thread(target=nonebot.run())
     thread1.start()
     thread2.start()

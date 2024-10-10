@@ -1,3 +1,5 @@
+import logging
+
 import gradio as gr
 import os
 
@@ -25,7 +27,7 @@ def main():
         gr.Markdown("# TXT File Editor")
 
         with gr.Row():
-            directory_input = gr.Textbox(label="输入文件夹路径", placeholder="e.g., /path/to/directory")
+            directory_input = gr.Textbox(label="输入文件夹路径", placeholder="awesome_bot/plugins/CloseAi/模型文本")
             load_files_button = gr.Button("加载文件夹")
 
         file_selector = gr.Dropdown(label="选择模型文本")
@@ -52,4 +54,5 @@ def main():
         save_button.click(fn=save_file_callback, inputs=[file_selector, text_area], outputs=text_area)
 
 # 启动 Gradio 应用
-    app.launch()
+    logging.info("web启动")
+    app.launch(share=True)
