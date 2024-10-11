@@ -27,7 +27,7 @@ def main():
         gr.Markdown("# TXT File Editor")
 
         with gr.Row():
-            directory_input = gr.Textbox(label="输入文件夹路径", placeholder="awesome_bot/plugins/CloseAi/模型文本")
+            directory_input = gr.Textbox(label="输入文件夹路径", placeholder="/opt/QQ-nonebot/awesome_bot/plugins/CloseAi/模型文本")
             load_files_button = gr.Button("加载文件夹")
 
         file_selector = gr.Dropdown(label="选择模型文本")
