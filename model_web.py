@@ -55,4 +55,4 @@ def main():
 
 # 启动 Gradio 应用
     logging.info("web启动")
-    app.launch(share=True)
+    app.launch(server_port=10086, server_name="0.0.0.0")
