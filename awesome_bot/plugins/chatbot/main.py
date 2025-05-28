@@ -15,12 +15,9 @@ from nonebot.adapters import Message
 from nonebot.rule import to_me
 from openai import OpenAI
 import sqlite3
-from tools.markdown_to_picture import markdown_to_images
-from tools.path_utils import get_absolute_path_from_script
-from tools.sqlite_utils import Mysqlite
 
-conn = sqlite3.connect(get_absolute_path_from_script(__file__, '../../../asset/nonebot.db'))
-cursor = conn.cursor()
+# conn = sqlite3.connect(get_absolute_path_from_script(__file__, '../../../asset/nonebot.db'))
+# cursor = conn.cursor()
 current_model = 2  # 当前使用的模型默认为小王
 
 
@@ -132,11 +129,11 @@ async def handle_function(args: Message = CommandArg()):
 view = on_command("当前模型", rule=to_me(), aliases={"current"}, priority=10, block=True)
 
 
-@view.handle()
-async def handle_view_function(args: Message = CommandArg()):
-    logging.info("开始执行模型查看命令")
-    model_name = Mysqlite.get_model_name(current_model)
-    await view.finish(f"当前为{current_model}号模型:{model_name}")
+# @view.handle()
+# async def handle_view_function(args: Message = CommandArg()):
+#     logging.info("开始执行模型查看命令")
+#     model_name = Mysqlite.get_model_name(current_model)
+#     await view.finish(f"当前为{current_model}号模型:{model_name}")
 
 
 # 选择
@@ -144,14 +141,14 @@ async def handle_view_function(args: Message = CommandArg()):
 select = on_command("模型选择", rule=to_me(), aliases={"select", "选择"}, priority=10, block=True)
 
 
-@select.handle()
-async def handle_select_function(args: Message = CommandArg()):
-    logging.info("开始执行模型选择命令")
-    if model_id := args.extract_plain_text():
-        is_existed = Mysqlite.is_model_exist(model_id)
-        if is_existed:
-            global current_model
-            current_model= model_id
+# @select.handle()
+# async def handle_select_function(args: Message = CommandArg()):
+#     logging.info("开始执行模型选择命令")
+#     if model_id := args.extract_plain_text():
+#         is_existed = Mysqlite.is_model_exist(model_id)
+#         if is_existed:
+#             global current_model
+#             current_model= model_id
 
 
 # 删除
@@ -159,19 +156,19 @@ async def handle_select_function(args: Message = CommandArg()):
 delete = on_command("模型删除", rule=to_me(), aliases={"delete", "删除"}, priority=1, block=True)
 
 
-@delete.handle()
-async def handle_delete_function(args: Message = CommandArg()):
-    logging.info("开始执行模型删除命令")
-    if name := args.extract_plain_text():
-        if name == "默认模型":
-            await delete.finish("默认模型无法删除")
-        elif name == Mysqlite.get_model_name(current_model):
-            await delete.finish("当前模型无法删除")
-        else:
-            if Mysqlite.delete_model(name):
-                await delete.finish(f"{name}模型删除成功")
-            else:
-                await delete.finish(f"{name}模型不存在")
+# @delete.handle()
+# async def handle_delete_function(args: Message = CommandArg()):
+#     logging.info("开始执行模型删除命令")
+#     if name := args.extract_plain_text():
+#         if name == "默认模型":
+#             await delete.finish("默认模型无法删除")
+#         elif name == Mysqlite.get_model_name(current_model):
+#             await delete.finish("当前模型无法删除")
+#         else:
+#             if Mysqlite.delete_model(name):
+#                 await delete.finish(f"{name}模型删除成功")
+#             else:
+#                 await delete.finish(f"{name}模型不存在")
 
         # 获取当前脚本所在的目录
         # 构建文件的绝对路径
@@ -182,12 +179,12 @@ async def handle_delete_function(args: Message = CommandArg()):
 model_list = on_command("模型列表", rule=to_me(), aliases={"list", "列表"}, priority=1, block=True)
 
 
-@model_list.handle()
-async def handle_delete_function(args: Message = CommandArg()):
-    logging.info("开始执行模型列表命令")
-    models=Mysqlite.list_models()
-    await model_list.finish(f"当前模型列表:\n{models}")
-
+# @model_list.handle()
+# async def handle_delete_function(args: Message = CommandArg()):
+#     logging.info("开始执行模型列表命令")
+#     models=Mysqlite.list_models()
+#     await model_list.finish(f"当前模型列表:\n{models}")
+#
 
 
 # 查看模型
@@ -195,23 +192,23 @@ async def handle_delete_function(args: Message = CommandArg()):
 view_model = on_command("查看模型", rule=to_me(), aliases={"view", "查看"}, priority=1, block=True)
 
 
-@view_model.handle()
-async def handle_view_model_function(args: Message = CommandArg()):
-    logging.info("开始执行查看模型命令")
-    name = args.extract_plain_text()
-    if name:
-        prompt_text=Mysqlite.get_prompt_text_by_name(name)
-        logging.info(prompt_text)
-        image_path=f'./{uuid.uuid4()}.png'
-        # output_files = [f"output_image.png"]
-        # output_files = [f"{image_path}"]
-        output_file = "output_image.png"  # 修改为 PNG 格式以确保兼容性
-        url=markdown_to_images(prompt_text,output_file)
-        image_message = MessageSegment.image(url)
-        # await view_model.finish(f"{name}模型的prompt文本是:\n{prompt_text}")
-        await view_model.finish(image_message)
-        if os.path.exists(image_path):
-            os.remove(image_path)
+# @view_model.handle()
+# async def handle_view_model_function(args: Message = CommandArg()):
+#     logging.info("开始执行查看模型命令")
+#     name = args.extract_plain_text()
+#     if name:
+#         prompt_text=Mysqlite.get_prompt_text_by_name(name)
+#         logging.info(prompt_text)
+#         image_path=f'./{uuid.uuid4()}.png'
+#         # output_files = [f"output_image.png"]
+#         # output_files = [f"{image_path}"]
+#         output_file = "output_image.png"  # 修改为 PNG 格式以确保兼容性
+#         url=markdown_to_images(prompt_text,output_file)
+#         image_message = MessageSegment.image(url)
+#         # await view_model.finish(f"{name}模型的prompt文本是:\n{prompt_text}")
+#         await view_model.finish(image_message)
+#         if os.path.exists(image_path):
+#             os.remove(image_path)
 
 
 # picture = on_command("图片", rule=to_me(), aliases={"picture", "图片"}, priority=1, block=True)
