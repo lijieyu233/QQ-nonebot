@@ -1,0 +1,19 @@
+asset
+# 字节码缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 虚拟环境
+venv/
+.env/
+.venv/
+
+# 测试覆盖率
+.coverage
+htmlcov/
+
+# 安装包
+*.egg-info/
+dist/
+build/
