@@ -15,10 +15,10 @@ driver.register_adapter(Adapter)
 
 # 3.设置qq适配器
 nonebot.load_plugin(Path('awesome_bot/plugins/chatbot/main.py'))
+nonebot.load_plugin(Path('awesome_bot/plugins/live_monitor/bot.py'))
 logging.info("bot启动")
 # time.sleep(30)
 # qq_bot = nonebot.get_bots()
 # qq_bot=nonebot.get_bot("102399732")
 # logging.info(f"qq_bot:{qq_bot}")
-if __name__ == "__main__":
-    nonebot.run()
+nonebot.run()
