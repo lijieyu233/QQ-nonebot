@@ -1,17 +1,14 @@
 import logging
-import sys
 
 logging.basicConfig(level=logging.INFO,   format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 from nonebot.adapters.onebot.v11.event import  MessageEvent
 from nonebot.plugin.on import on_keyword, on, on_message
 
 import time
-import nonebot
 from core.douyinliverecorder import spider
 from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters import Message
-from nonebot.rule import to_me, keyword, command
 from nonebot import  get_bot
 async def is_enable() -> bool:
     return True
@@ -32,7 +29,8 @@ async def handle_function(event: MessageEvent):
 2. /直播 监控列表
 3. /直播 开启监控 name
 4. /直播 关闭监控 name
-5. /直播 给老子滚 name"""
+5. /直播 给老子滚 name
+6. /直播 添加监控 name live_url"""
     await command_help.finish(message)
 
 

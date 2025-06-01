@@ -6,19 +6,12 @@ from awesome_bot.plugins.live_monitor.test import is_liver_living
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
                     )
-from apscheduler.schedulers.background import BackgroundScheduler
-
-import time
-from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters import Message
 import nonebot
 from nonebot import require
 from nonebot.plugin.on import on_command
-
-from core.douyinliverecorder import spider
 from utils.mysql_utils import MysqlClient
-
 require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler
 
@@ -42,7 +35,14 @@ async def handle_function(args: Message = CommandArg()):
                 else:
                     message_not_living += f"   {live['id']},{live['name']} 休息中 {live['live_url']}\n"
             await   live_query.finish(message_living + message_not_living)
-
+        if "添加监控" in  user_content:
+            params= user_content.split()
+            logging.info(params)
+            rows=MysqlClient.add_monitor_liver(params[2],params[3])
+            if rows:
+                await live_query.finish("添加成功")
+            else:
+                await live_query.finish("添加失败")
         if "监控列表" in user_content:
             message_monitoring = "正在监控中:\n"
             message_not_monitoring = "未监控:\n"
