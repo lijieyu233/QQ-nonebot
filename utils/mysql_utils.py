@@ -57,6 +57,10 @@ class MysqlClient:
                     conn.commit()
                     return cursor.rowcount
 
+
+
+
+    # 直播监控相关
     @staticmethod
     def fetch_monitor_liver():
         """
@@ -112,7 +116,12 @@ class MysqlClient:
         sql = "delete  from monitor_liver where name = %s"
         return MysqlClient.execute(sql, (name,))
 
-
+    # 提示词
+    @staticmethod
+    def get_prompt_text_by_name(name):
+        sql = "SELECT * FROM prompt_template where name = %s"
+        return MysqlClient.execute(sql, (name,))[0]
 if __name__ == '__main__':
     # print(MysqlClient.fetch_monitor_liver())
-    print(MysqlClient.set_live_stage(1, 1))
+    # print(MysqlClient.set_live_stage(1, 1))
+    print(MysqlClient.get_prompt_text_by_name("一猫人机器人"))

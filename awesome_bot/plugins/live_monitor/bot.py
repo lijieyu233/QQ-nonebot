@@ -81,7 +81,7 @@ async def handle_function(args: Message = CommandArg()):
 
 async def monitor_diangun():
     bot = nonebot.get_bot()
-    await bot.call_api("send_group_msg", group_id=609302019, message="监控开始")
+    await bot.call_api("send_group_msg", group_id=609302019, message="一猫人 启动！")
     while True:
         livers = MysqlClient.fetch_monitor_liver()
         for live in livers:
